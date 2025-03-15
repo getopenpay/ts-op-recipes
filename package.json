@@ -17,6 +17,6 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
-    "@getopenpay/client": "^0.0.13"
+    "@getopenpay/client": "^0.0.14"
   }
 }
