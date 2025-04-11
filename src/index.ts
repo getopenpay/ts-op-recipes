@@ -1,5 +1,6 @@
 import { Configuration } from '@getopenpay/client';
 import OpenPayClient from '@getopenpay/client/client';
+import { WebhookUtils, InvalidSignatureError } from './webhookUtils';
 
 // Create client
 const config = new Configuration({
@@ -128,6 +129,32 @@ async function meteredSubscriptionCreationRecipe() {
 
   } catch (error) {
     console.error('Error:', error);
+  }
+}
+
+async function verifyWebhookSignatureRecipe() {
+  const secret_key = 'whsec_XXXXXXXXXXXXXXXX';
+  const event_data = '{"id": "event_dev_abcdefg12345678", "object": "event", ...}';
+
+  // Example request object. Use the real request reponse here for your application
+  const request = {
+    headers: {
+      get: (header: string) => 't=1234567890,v1=abcdef1234567890'
+    }
+  };
+
+  const signature_digest = request.headers.get('signature-digest');
+  const webhookUtils = new WebhookUtils();
+
+  try {
+    webhookUtils.validatePayload(event_data, signature_digest, secret_key);
+    console.log('Webhook signature is valid');
+  } catch (error) {
+    if (error instanceof InvalidSignatureError) {
+      console.error('Invalid webhook signature');
+    } else {
+      console.error('Error verifying webhook:', error);
+    }
   }
 }
 
